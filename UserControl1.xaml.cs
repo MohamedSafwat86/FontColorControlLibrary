@@ -35,6 +35,12 @@ namespace FontColorControlLibrary
         public static readonly RoutedEvent TheFontStyleChangedEvent;
         public static readonly DependencyProperty TheFontWeightProperty;
         public static readonly RoutedEvent TheFontWeightChangedEvent;
+        public static readonly DependencyProperty ColorProperty;
+        public static readonly RoutedEvent ColorChangedEvent;
+        private static readonly DependencyProperty RedProperty;
+        private static readonly DependencyProperty GreenProperty;
+        private static readonly DependencyProperty BlueProperty;
+
 
 
         static FontColorPicker()
@@ -49,9 +55,55 @@ namespace FontColorControlLibrary
             TheFontStyleChangedEvent = EventManager.RegisterRoutedEvent("TheFontStyleChanged", RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<FontStyle>), typeof(FontColorPicker));
             TheFontWeightProperty = DependencyProperty.Register("TheFontWeight", typeof(FontWeight), typeof(FontColorPicker), new FrameworkPropertyMetadata((FontWeight)FontWeights.Normal, new PropertyChangedCallback(TheFontWeightChangedCallback)));
             TheFontWeightChangedEvent = EventManager.RegisterRoutedEvent("TheFontWeightChanged", RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<FontWeight>), typeof(FontColorPicker));
+            ColorProperty = DependencyProperty.Register("Color", typeof(Color), typeof(FontColorPicker), new FrameworkPropertyMetadata((Color)Colors.Black, new PropertyChangedCallback(ColorChangedCallback)));
+            ColorChangedEvent = EventManager.RegisterRoutedEvent("ColorChanged", RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<Color>), typeof(FontColorPicker));
+            RedProperty = DependencyProperty.Register("Red", typeof(byte), typeof(FontColorPicker), new FrameworkPropertyMetadata((byte)0, new PropertyChangedCallback(RGBChangedCallback)));
+            GreenProperty = DependencyProperty.Register("Green", typeof(byte), typeof(FontColorPicker), new FrameworkPropertyMetadata((byte)0, new PropertyChangedCallback(RGBChangedCallback)));
+            BlueProperty = DependencyProperty.Register("Blue", typeof(byte), typeof(FontColorPicker), new FrameworkPropertyMetadata((byte)0, new PropertyChangedCallback(RGBChangedCallback)));
         }
 
+
+        private byte Red
+        {
+            get { return (byte)this.GetValue(RedProperty); }
+            set { SetValue(RedProperty, value); }
+        }
+       
         
+
+        private byte Green
+        {
+            get { return (byte)this.GetValue(GreenProperty); }
+            set { SetValue(GreenProperty, value); }
+        }
+        
+
+        private byte Blue
+        {
+            get { return (byte)this.GetValue(BlueProperty); }
+            set { SetValue(BlueProperty, value); }
+        }
+        
+        private static void RGBChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if(d is FontColorPicker fontColor)
+            {
+                if(e.Property == FontColorPicker.RedProperty)
+                {
+                    fontColor.Color= Color.FromRgb((byte)e.NewValue,fontColor.Green,fontColor.Blue);
+                }
+                else if (e.Property == FontColorPicker.GreenProperty)
+                {
+                    fontColor.Color = Color.FromRgb(fontColor.Red, (byte)e.NewValue, fontColor.Blue);
+                }
+                else if (e.Property == FontColorPicker.BlueProperty)
+                {
+                    fontColor.Color = Color.FromRgb(fontColor.Red,fontColor.Green , (byte)e.NewValue);
+                }
+            }
+      //      throw new NotImplementedException();
+        }
+
 
 
 
@@ -199,6 +251,31 @@ namespace FontColorControlLibrary
             // throw new NotImplementedException();
         }
 
+        //Color
+        public Color Color
+        {
+            get { return (Color)this.GetValue(ColorProperty); }
+            set { SetValue(ColorProperty, value); }
+        }
+
+        public event RoutedPropertyChangedEventHandler<Color> ColorChanged
+        {
+            add { this.AddHandler(ColorChangedEvent, value); }
+            remove { this.RemoveHandler(ColorChangedEvent, value); }
+        }
+
+        private static void ColorChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (d is FontColorPicker fontColor)
+            {
+                fontColor.Red = ((Color)e.NewValue).R;
+                fontColor.Green = ((Color)e.NewValue).G;
+                fontColor.Blue = ((Color)e.NewValue).B;
+                RoutedPropertyChangedEventArgs<Color> args = new RoutedPropertyChangedEventArgs<Color>((Color)e.OldValue, (Color)e.NewValue, FontColorPicker.ColorChangedEvent);
+                fontColor.RaiseEvent(args);
+            }
+        }
+
 
 
         private void typefaceslistbox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -215,6 +292,20 @@ namespace FontColorControlLibrary
         {
             this.Fontsizecombobox.ItemsSource = Enumerable.Range(1, 36).Select(i=> { return (double)i; });
            // this.TheFontSize = 12;
+        }
+
+        public override void OnApplyTemplate()
+        {
+            base.OnApplyTemplate();
+            Binding binding = new Binding("Red");
+            binding.RelativeSource = new RelativeSource(RelativeSourceMode.FindAncestor, typeof(UserControl), 1);
+            this.redslider.SetBinding(Slider.ValueProperty, binding);
+            binding = new Binding("Green");
+            binding.RelativeSource = new RelativeSource(RelativeSourceMode.FindAncestor, typeof(UserControl), 1);
+            this.greenslider.SetBinding(Slider.ValueProperty, binding);
+            binding = new Binding("Blue");
+            binding.RelativeSource = new RelativeSource(RelativeSourceMode.FindAncestor, typeof(UserControl), 1);
+            this.blueslider.SetBinding(Slider.ValueProperty, binding);
         }
     }
 }

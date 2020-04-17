@@ -5,8 +5,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:FontColorControlLibrary"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800" Loaded="UserControl_Loaded">
-    <Grid x:Name="grid" Background="White">
+             d:DesignHeight="450" d:DesignWidth="820" Loaded="UserControl_Loaded">
+    <Grid x:Name="grid">
         <Grid.RowDefinitions>
             <RowDefinition/>
             <RowDefinition Height="Auto" />
@@ -31,8 +31,35 @@
             <ComboBox x:Name="Fontsizecombobox" VerticalAlignment="Center" MinWidth="75" SelectedItem="{Binding TheFontSize, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}, Mode=TwoWay}"/>
         </StackPanel>
         <Border Grid.Row="3" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" BorderThickness="2" BorderBrush="#FF9E5D5D" Padding="10" Margin="10">
-            <TextBlock  Text="Sample" FontSize="{Binding TheFontSize, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:FontColorPicker}}}" FontStretch="{Binding TheFontStretch, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:FontColorPicker}}}" FontStyle="{Binding TheFontStyle, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:FontColorPicker}}}" FontWeight="{Binding TheFontWeight, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:FontColorPicker}}}" FontFamily="{Binding TheFontFamily, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:FontColorPicker}}}"/>
+            <TextBlock  Text="Sample" FontSize="{Binding TheFontSize, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:FontColorPicker}}}" FontStretch="{Binding TheFontStretch, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:FontColorPicker}}}" FontStyle="{Binding TheFontStyle, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:FontColorPicker}}}" FontWeight="{Binding TheFontWeight, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:FontColorPicker}}}" FontFamily="{Binding TheFontFamily, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:FontColorPicker}}}">
+                <TextBlock.Foreground>
+                    <SolidColorBrush Color="{Binding Color, Mode=TwoWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:FontColorPicker}}}"/>
+                </TextBlock.Foreground>
+            </TextBlock>
         </Border >
-        
+        <Border Grid.Column="1" Grid.Row="2" Margin="10" BorderThickness="2">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Slider x:Name="redslider" Maximum="255" SmallChange="1" TickPlacement="BottomRight" IsSnapToTickEnabled="True" VerticalAlignment="Center" />
+                <Slider x:Name="greenslider" Grid.Row="1" Maximum="255" SmallChange="1" TickPlacement="BottomRight" IsSnapToTickEnabled="True" VerticalAlignment="Center" />
+                <Slider x:Name="blueslider" Grid.Row="2" Maximum="255" SmallChange="1" TickPlacement="BottomRight" IsSnapToTickEnabled="True" VerticalAlignment="Center" />
+                <Path x:Name="colorpath" Grid.Column="1" Grid.RowSpan="3" Stroke="Black" Margin="10,0,0,0">
+                    <Path.Fill>
+                        <SolidColorBrush Color="{Binding Color, Mode=TwoWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:FontColorPicker}}}"/>
+                    </Path.Fill>
+                    <Path.Data>
+                        <PathGeometry Figures="M35,60 l25,-25 h40 l25,25 v20 l-25,25 h-40 l-25,-25 z"/>
+                    </Path.Data>
+                </Path>
+            </Grid> 
+        </Border>
     </Grid>
 </UserControl>
